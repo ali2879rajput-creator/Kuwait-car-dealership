@@ -145,36 +145,25 @@ export default function App() {
     }
     
     utterance.rate = 1.05;
-    utterance.pitch = 1.15; // Higher pitch for a "younger" cheerful feel
+    utterance.pitch = 1.15;
 
     utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      // Auto-listen after speaking if in voice mode
-      if (useVoice) {
-        setTimeout(() => {
-          recognitionRef.current?.start();
-          setIsListening(true);
-        }, 500);
-      }
-    };
+    utterance.onend = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
-  }, [useVoice]);
+  }, []);
 
-  // Auto-greeting logic
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!hasGreeted) {
-        setIsAssistantOpen(true);
-        const greeting = "Hala wallah! 😊 مرحبا في كويت لكشيري موتورز! Shlonik? Welcome to Kuwait Luxury Motors! How can I help you today?";
-        setMessages([{ role: 'assistant', content: greeting }]);
-        speakText(greeting);
-        setHasGreeted(true);
-      }
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [hasGreeted, speakText]);
+  // Removed auto-greeting useEffect that was speaking on mount
+
+  const handleOpenAssistant = () => {
+    setIsAssistantOpen(true);
+    if (!hasGreeted) {
+      const greeting = "Hala wallah! 😊 مرحبا في كويت لكشيري موتورز! Shlonik? Welcome to Kuwait Luxury Motors! How can I help you today?";
+      setMessages([{ role: 'assistant', content: greeting }]);
+      speakText(greeting);
+      setHasGreeted(true);
+    }
+  };
 
   // Carousel logic
   useEffect(() => {
@@ -526,10 +515,7 @@ export default function App() {
         </AnimatePresence>
 
         <button 
-          onClick={() => {
-            setIsAssistantOpen(!isAssistantOpen);
-            setUseVoice(true); // Default to voice mode when opened
-          }}
+          onClick={handleOpenAssistant}
           className="group relative flex items-center gap-3 bg-brand-red hover:bg-red-700 text-white px-6 py-4 rounded-full font-bold shadow-xl transition-all hover:scale-105 active:scale-95"
         >
           <div className="absolute -top-1 -right-1 flex h-4 w-4">
